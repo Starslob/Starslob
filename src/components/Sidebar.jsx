@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { ethers } from "ethers";
-import { ABI, CONTRACT_ADDRESS } from "./Constants";
-import theta from "../assets/img/theta.jpg";
-import tfuel from "../assets/img/tfuel.jpg";
+import { StacksMainnet } from "@stacks/network";
+import { AccountsApi } from "@stacks/blockchain-api-client"; // Imported AccountsApi for fetching STX balance
+import { useWeb3 } from "../Web3Provider";
+import btc from "../assets/img/btc.png";
+import stacks from "../assets/img/stacks.png";
 import useimage from "../assets/address.jpg";
 import Modal from "./Modal";
 
+// Dummy data for your top users
 const Ongoinggm = [
   { id: 1, title: "Tolujohn Bob", reward: "30", level: "1" },
   { id: 2, title: "Fabrre don", reward: "15", level: "6" },
@@ -14,46 +16,69 @@ const Ongoinggm = [
   { id: 5, title: "Rugberbs", reward: "20", level: "2" },
 ];
 
+// Function to fetch BTC balance using a public API
+const fetchBitcoinBalance = async (btcAddress) => {
+  try {
+    const response = await fetch(
+      `https://blockstream.info/api/address/${btcAddress}`
+    );
+    const data = await response.json();
+    const balanceInSatoshis =
+      data.chain_stats.funded_txo_sum - data.chain_stats.spent_txo_sum;
+    const balanceInBTC = balanceInSatoshis / 100000000; // Convert satoshis to BTC
+    return balanceInBTC;
+  } catch (error) {
+    console.error("Failed to fetch BTC balance:", error);
+    return "0";
+  }
+};
+
+// Function to fetch STX balance using Stacks.js
+const fetchStacksBalance = async (stxAddress) => {
+  const network = new StacksMainnet();
+  const accountsApi = new AccountsApi();
+  try {
+    const accountInfo = await accountsApi.getAccountInfo({
+      principal: stxAddress,
+      network: network,
+    });
+    const balanceInMicroSTX = accountInfo.balance;
+    const balanceInSTX = balanceInMicroSTX / 1000000; // Convert microSTX to STX
+    return balanceInSTX;
+  } catch (error) {
+    console.error("Failed to fetch STX balance:", error);
+    return "0";
+  }
+};
+
 const Sidebar = () => {
   const [isGamemodalOpen, setIsGamemodalOpen] = useState(false);
-  const [thetaBalance, setThetaBalance] = useState("0");
-  const [tfuelBalance, setTfuelBalance] = useState("0");
+  const [btcBalance, setBtcBalance] = useState("0");
+  const [stxBalance, setStxBalance] = useState("0");
+  const { account } = useWeb3(); // Get the connected STX account from Web3 context
 
   useEffect(() => {
     const fetchBalances = async () => {
-      if (window.ethereum) {
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const btcAddress = account; // Use STX account as a placeholder for BTC address (if applicable)
+      const stxAddress = account; // STX address from the connected wallet
 
-        try {
-          const accounts = await window.ethereum.request({
-            method: "eth_accounts",
-          });
-          if (accounts.length > 0) {
-            const address = accounts[0];
+      try {
+        // Fetch BTC balance
+        const btcBal = await fetchBitcoinBalance(btcAddress);
+        setBtcBalance(btcBal);
 
-            // Fetch TFUEL balance
-            const tfuelBalance = await provider.getBalance(address);
-            setTfuelBalance(ethers.utils.formatEther(tfuelBalance));
-
-            // Fetch THETA balance using contract
-            const thetaContract = new ethers.Contract(
-              CONTRACT_ADDRESS,
-              ABI,
-              provider
-            );
-            const thetaBalance = await thetaContract.balanceOf(address);
-            setThetaBalance(ethers.utils.formatEther(thetaBalance));
-          } else {
-            console.error("No accounts found");
-          }
-        } catch (error) {
-          console.error("Failed to get accounts:", error);
-        }
+        // Fetch STX balance
+        const stxBal = await fetchStacksBalance(stxAddress);
+        setStxBalance(stxBal);
+      } catch (error) {
+        console.error("Error fetching balances:", error);
       }
     };
 
-    fetchBalances();
-  }, []);
+    if (account) {
+      fetchBalances(); // Only fetch balances if the account is available
+    }
+  }, [account]);
 
   const handleGamemodalClick = () => {
     setIsGamemodalOpen(true);
@@ -61,12 +86,6 @@ const Sidebar = () => {
 
   const handleCloseGamemodal = () => {
     setIsGamemodalOpen(false);
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // claim
-    handleCloseGamemodal();
   };
 
   return (
@@ -78,19 +97,19 @@ const Sidebar = () => {
             <h5 className="card-title">Balance:</h5>
             <div className="d-flex align-items-center">
               <div className="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                <img id="balance" src={theta} alt="Theta Logo" />
+                <img id="balance" src={btc} alt="BTC Logo" />
               </div>
               <div className="ps-3">
-                <h6>{parseFloat(thetaBalance).toFixed(2)} THETA</h6>
+                <h6>{parseFloat(btcBalance).toFixed(2)} BTC</h6>
               </div>
             </div>
             <hr />
             <div className="d-flex align-items-center">
               <div className="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                <img id="balance" src={tfuel} alt="TFUEL Logo" />
+                <img id="balance" src={stacks} alt="STX Logo" />
               </div>
               <div className="ps-3">
-                <h6> {parseFloat(tfuelBalance).toFixed(2)} TFUEL</h6>
+                <h6> {parseFloat(stxBalance).toFixed(2)} STX</h6>
               </div>
             </div>
           </div>
@@ -139,12 +158,7 @@ const Sidebar = () => {
         </div>
         {/* End News & Updates */}
       </div>
-      <>
-        {/* Render the Gamemodal if isGamemodalOpen is true */}
-        {isGamemodalOpen && (
-          <Modal onClose={handleCloseGamemodal} onSubmit={handleSubmit} />
-        )}
-      </>
+      <>{isGamemodalOpen && <Modal onClose={handleCloseGamemodal} />}</>
     </>
   );
 };

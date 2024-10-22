@@ -6,25 +6,25 @@ import { ethers } from "ethers";
 import { BsCheckCircle } from "react-icons/bs";
 import Quiztheory from "./Quiztheory";
 import Participants from "./Participants";
-import tfuel from "../assets/img/tfuel.jpg";
+import stx from "../assets/img/stx-white-no-gb.png";
 import useimage from "../assets/address.jpg";
 
 const cardData = [
   {
     badgeColor: "primary",
-    badgeText: "Bronze 10 TFUEL",
+    badgeText: "Bronze 10 STX",
     range: "60% - 69%",
     items: ["Naccy buu", "sia funky", "Pinat van"],
   },
   {
     badgeColor: "success",
-    badgeText: "Silver 20 TFUEL",
+    badgeText: "Silver 20 STX",
     range: "70% - 79%",
     items: ["Natmas", "Tolujohn", "Huun gss"],
   },
   {
     badgeColor: "warning",
-    badgeText: "Gold 50 TFUEL",
+    badgeText: "Gold 50 STX",
     range: "80% - 100%",
     items: ["Tolujohn", "Faih jon", "Percy mat"],
   },
@@ -151,7 +151,7 @@ const QuizInfo = () => {
                       <span style={{ color: "#b1bad3" }}>
                         Fee:{" "}
                         <img
-                          src={tfuel}
+                          src={stx}
                           alt="Theta Logo"
                           style={{
                             width: "20px",
@@ -171,7 +171,7 @@ const QuizInfo = () => {
                       <span style={{ color: "#b1bad3" }}>
                         Total Price Pool:{" "}
                         <img
-                          src={tfuel}
+                          src={stx}
                           alt="Theta Logo"
                           style={{
                             width: "20px",
@@ -186,7 +186,7 @@ const QuizInfo = () => {
                       <span style={{ color: "#b1bad3" }}>
                         Remaining Pool:{" "}
                         <img
-                          src={tfuel}
+                          src={stx}
                           alt="Theta Logo"
                           style={{
                             width: "20px",

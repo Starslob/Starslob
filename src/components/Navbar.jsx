@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import logo from "../assets/geniuslob.png";
+import logo from "../assets/img/starslob-star-logo.png";
 import Connectwallet from "./walletconnect/Connectwallet";
 
 // import logo from "../assets/img/logo.png";

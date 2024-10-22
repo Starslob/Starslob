@@ -250,7 +250,7 @@ const QuizForm = ({ generateIncorrectOptions }) => {
             <input
               type="number"
               className="form-control"
-              placeholder="Price Pool (TFUEL)"
+              placeholder="Price Pool (STX)"
               value={quizInfo.pricepool}
               onChange={(e) =>
                 setQuizInfo({
@@ -293,7 +293,7 @@ const QuizForm = ({ generateIncorrectOptions }) => {
             <input
               type="number"
               className="form-control"
-              placeholder="Entrance Fee (TFUEL)"
+              placeholder="Entrance Fee (STX)"
               value={quizInfo.entranceFee}
               onChange={(e) =>
                 setQuizInfo({

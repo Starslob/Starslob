@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { useWeb3 } from "../Web3Provider";
 import { ABI, CONTRACT_ADDRESS } from "./Constants";
 import { ethers } from "ethers";
-import theta from "../assets/img/tfuel.jpg";
+import stx from "../assets/img/stx-white-no-gb.png";
 
 const cardData = [
   { name: "Jane col", reward: "10", level: "1", id: 1 },
@@ -119,7 +119,7 @@ const Genius = () => {
                             >
                               Price Pool:
                               <img
-                                src={theta}
+                                src={stx}
                                 alt="Theta Logo"
                                 style={{
                                   width: "20px",

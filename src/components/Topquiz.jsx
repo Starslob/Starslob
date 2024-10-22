@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import useimage from "../assets/address.jpg";
 import Modal from "./Modal";
 import { Link } from "react-router-dom";
-import tfuel from "../assets/img/tfuel.jpg";
+import stx from "../assets/img/stx-white-no-gb.png";
 
 const cardData = [
   {
@@ -102,7 +102,7 @@ const Topquiz = () => {
                                 <span style={{ color: "#b1bad3" }}>
                                   POOL:{" "}
                                   <img
-                                    src={tfuel}
+                                    src={stx}
                                     alt="Theta Logo"
                                     style={{
                                       width: "20px",
