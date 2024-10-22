@@ -1,63 +1,71 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
-import { setupWalletSelector } from "@near-wallet-selector/core";
-import { setupNearWallet } from "@near-wallet-selector/near-wallet";
-import { setupModal } from "@near-wallet-selector/modal-ui";
-import "@near-wallet-selector/modal-ui/styles.css";
+import { AppConfig, UserSession, showConnect, openContractCall } from "@stacks/connect";
+import { StacksTestnet } from "@stacks/network";
+import { bufferCV, uintCV } from "@stacks/transactions";
 
 const Web3Context = createContext();
 
 export const Web3Provider = ({ children }) => {
   const [connected, setConnected] = useState(false);
-  const [accountId, setAccountId] = useState("");
-  const [selector, setSelector] = useState(null);
-  const [wallet, setWallet] = useState(null);
+  const [account, setAccount] = useState("");
+  const [userSession, setUserSession] = useState(null);
 
   useEffect(() => {
-    const initNear = async () => {
-      const selectorInstance = await setupWalletSelector({
-        network: "testnet",
-        modules: [setupNearWallet()],
-      });
+    const appConfig = new AppConfig();
+    const session = new UserSession({ appConfig });
 
-      const modal = setupModal(selectorInstance, {
-        contractId: "test.testnet",
-      });
-
-      modal.show();
-
-      setSelector(selectorInstance);
-
-      if (selectorInstance.isSignedIn()) {
-        const accounts = await selectorInstance.getAccounts();
-        setAccountId(accounts[0].accountId);
+    if (session.isUserSignedIn()) {
+      const userData = session.loadUserData();
+      setAccount(userData.profile.stxAddress.testnet); // Stacks Testnet Address
+      setConnected(true);
+    } else if (session.isSignInPending()) {
+      session.handlePendingSignIn().then((userData) => {
+        setAccount(userData.profile.stxAddress.testnet);
         setConnected(true);
-      }
-    };
+      });
+    }
 
-    initNear();
+    setUserSession(session);
   }, []);
 
-  const connectWallet = async () => {
-    const walletInstance = await selector.wallet("near-wallet");
-    await walletInstance.signIn({ contractId: "test.testnet" });
-    setWallet(walletInstance);
+  const connectWallet = () => {
+    showConnect({
+      userSession,
+      network: new StacksTestnet(),
+      appDetails: {
+        name: "Your DApp Name",
+        icon: "https://example.com/icon.png",
+      },
+      onFinish: () => {
+        const userData = userSession.loadUserData();
+        setAccount(userData.profile.stxAddress.testnet);
+        setConnected(true);
+      },
+      onCancel: () => {
+        console.error("Wallet connection canceled");
+      },
+    });
   };
 
-  const disconnectWallet = async () => {
-    if (wallet) {
-      await wallet.signOut();
-      setConnected(false);
-      setAccountId("");
-    }
+  const disconnectWallet = () => {
+    userSession.signUserOut(window.location.origin);
+    setConnected(false);
+    setAccount("");
+  };
+
+  const shortenAddress = (address) => {
+    if (!address) return "";
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
   return (
     <Web3Context.Provider
       value={{
         connected,
-        accountId,
+        account,
         connectWallet,
         disconnectWallet,
+        shortenAddress,
       }}
     >
       {children}
@@ -65,6 +73,4 @@ export const Web3Provider = ({ children }) => {
   );
 };
 
-export const useWeb3 = () => {
-  return useContext(Web3Context);
-};
+export const useWeb3 = () => useContext(Web3Context);

@@ -30,7 +30,7 @@ const Navbar = () => {
             alt=""
             className="h-[70px] w-[70px] object-cover"
           />
-          <span className="d-none d-lg-block">eniusmind</span>
+          <span className="d-none d-lg-block">StarsLob</span>
         </Link>
       </div>
       {/* End Logo */}

@@ -4,11 +4,11 @@ import logo from "../../assets/address.jpg";
 import { useWeb3 } from "../../Web3Provider";
 
 const ConnectWallet = () => {
-  const { connected, accountId, connectWallet, disconnectWallet } = useWeb3();
+  const { connected, account, connectWallet, disconnectWallet } = useWeb3();
 
   const shortenAccountId = (id) => {
     if (!id) return "";
-    return `${id.slice(0, 6)}...${id.slice(id.length - 4)}`;
+    return `${id.slice(0, 6)}...${id.slice(-4)}`;
   };
 
   return (
@@ -33,7 +33,7 @@ const ConnectWallet = () => {
             >
               <img src={logo} alt="Profile" className="rounded-circle" />
               <span className="d-none d-md-block ps-2">
-                {shortenAccountId(accountId)}
+                {shortenAccountId(account)}
               </span>
             </Link>
           </li>
