@@ -29,7 +29,7 @@
 (define-event participant-added (quiz-id uint participant principal))
 (define-event rewards-distributed (quiz-id uint participants (list 100 principal) amounts (list 100 uint)))
 
-;; Function to create a quiz
+;; Create a quiz
 (define-public (create-quiz (title (string-ascii 100)) 
                             (description (string-ascii 200)) 
                             (image-url (string-ascii 256)) 
@@ -68,7 +68,7 @@
     )
 )
 
-;; Function for participants to join a quiz
+;; Participants to join a quiz
 (define-public (participate-in-quiz (quiz-id uint))
     (let ((quiz (map-get? quizzes quiz-id)))
         (asserts! quiz (err "Quiz not found"))
@@ -96,7 +96,7 @@
     )
 )
 
-;; Function to submit quiz results
+;; Submit quiz results
 (define-public (submit-quiz-result (quiz-id uint) (grade uint) (num-questions-passed uint) (num-questions-failed uint) (points uint))
     (let ((quiz (map-get? quizzes quiz-id)))
         (asserts! quiz (err "Quiz not found"))
@@ -111,7 +111,7 @@
     )
 )
 
-;; Function to distribute rewards
+;; Distribute rewards
 (define-public (distribute-rewards (quiz-id uint) (participants (list 100 principal)) (amounts (list 100 uint)))
     (let ((quiz (map-get? quizzes quiz-id)))
         (asserts! quiz (err "Quiz not found"))
