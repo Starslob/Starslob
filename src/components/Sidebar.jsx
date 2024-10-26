@@ -1,6 +1,4 @@
-import React, { useState, useEffect } from "react";
-import { StacksMainnet } from "@stacks/network";
-import { AccountsApi } from "@stacks/blockchain-api-client"; // Imported AccountsApi for fetching STX balance
+import React, { useState } from "react";
 import { useWeb3 } from "../Web3Provider";
 import btc from "../assets/img/btc.png";
 import stacks from "../assets/img/stacks.png";
@@ -16,69 +14,9 @@ const Ongoinggm = [
   { id: 5, title: "Rugberbs", reward: "20", level: "2" },
 ];
 
-// Function to fetch BTC balance using a public API
-const fetchBitcoinBalance = async (btcAddress) => {
-  try {
-    const response = await fetch(
-      `https://blockstream.info/api/address/${btcAddress}`
-    );
-    const data = await response.json();
-    const balanceInSatoshis =
-      data.chain_stats.funded_txo_sum - data.chain_stats.spent_txo_sum;
-    const balanceInBTC = balanceInSatoshis / 100000000; // Convert satoshis to BTC
-    return balanceInBTC;
-  } catch (error) {
-    console.error("Failed to fetch BTC balance:", error);
-    return "0";
-  }
-};
-
-// Function to fetch STX balance using Stacks.js
-const fetchStacksBalance = async (stxAddress) => {
-  const network = new StacksMainnet();
-  const accountsApi = new AccountsApi();
-  try {
-    const accountInfo = await accountsApi.getAccountInfo({
-      principal: stxAddress,
-      network: network,
-    });
-    const balanceInMicroSTX = accountInfo.balance;
-    const balanceInSTX = balanceInMicroSTX / 1000000; // Convert microSTX to STX
-    return balanceInSTX;
-  } catch (error) {
-    console.error("Failed to fetch STX balance:", error);
-    return "0";
-  }
-};
-
 const Sidebar = () => {
   const [isGamemodalOpen, setIsGamemodalOpen] = useState(false);
-  const [btcBalance, setBtcBalance] = useState("0");
-  const [stxBalance, setStxBalance] = useState("0");
-  const { account } = useWeb3(); // Get the connected STX account from Web3 context
-
-  useEffect(() => {
-    const fetchBalances = async () => {
-      const btcAddress = account; // Use STX account as a placeholder for BTC address (if applicable)
-      const stxAddress = account; // STX address from the connected wallet
-
-      try {
-        // Fetch BTC balance
-        const btcBal = await fetchBitcoinBalance(btcAddress);
-        setBtcBalance(btcBal);
-
-        // Fetch STX balance
-        const stxBal = await fetchStacksBalance(stxAddress);
-        setStxBalance(stxBal);
-      } catch (error) {
-        console.error("Error fetching balances:", error);
-      }
-    };
-
-    if (account) {
-      fetchBalances(); // Only fetch balances if the account is available
-    }
-  }, [account]);
+  const { account, btcBalance, stxBalance } = useWeb3(); // Get account and balances from Web3 context
 
   const handleGamemodalClick = () => {
     setIsGamemodalOpen(true);
@@ -109,7 +47,7 @@ const Sidebar = () => {
                 <img id="balance" src={stacks} alt="STX Logo" />
               </div>
               <div className="ps-3">
-                <h6> {parseFloat(stxBalance).toFixed(2)} STX</h6>
+                <h6>{parseFloat(stxBalance).toFixed(2)} STX</h6>
               </div>
             </div>
           </div>
@@ -158,7 +96,7 @@ const Sidebar = () => {
         </div>
         {/* End News & Updates */}
       </div>
-      <>{isGamemodalOpen && <Modal onClose={handleCloseGamemodal} />}</>
+      {isGamemodalOpen && <Modal onClose={handleCloseGamemodal} />}
     </>
   );
 };
