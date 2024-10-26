@@ -9,11 +9,19 @@
 
 2. Deploy your contract using the Stacks CLI:
 
-- Authenticate by running: `stx auth`
+- `cd starslob-contract`
 
-- Deploy your contract: `stx contract deploy quiz-platform quiz-platform.clar --network=testnet --sender=<YOUR_STACKS_ADDRESS>`
+- Check: `clarinet check`
+
+- Generate you deployment file: `clarinet deployment generate --testnet --low-cost`
+
+- Deploy your contract: `clarinet deployment apply -p deployments/default.testnet-plan.yaml`
+
+- My wallet testnet: ST5HMBACVCBHDE0H96M11NCG6TKF7WVWSVSG2P53
 
 3. Verify Deployment:
 
 - Testnet Explorer: explorer.stacks.co
 - Mainnet Explorer: explorer.stacks.co
+
+-  Contract publish: ST5HMBACVCBHDE0H96M11NCG6TKF7WVWSVSG2P53.quizplatform

@@ -1,9 +1,15 @@
-(define-data-var quizzes (map uint (tuple 
-    (title (string-ascii 100)) 
-    (description (string-ascii 200)) 
+;; Define the contract name
+(define-read-only (get-balance)
+    (ok (stx-get-balance tx-sender))
+)
+
+;; Store quizzes with an incrementing ID counter and essential fields
+(define-data-var quizzes (map uint (tuple
+    (title (string-ascii 100))
+    (description (string-ascii 200))
     (image-url (string-ascii 256))
-    (entrance-fee uint) 
-    (price-pool uint) 
+    (entrance-fee uint)
+    (price-pool uint)
     (timer uint)
     (organizer principal)
     (is-active bool)
@@ -14,9 +20,9 @@
         (question-img (string-ascii 256))
         (options (list 4 (string-ascii 50)))
         (correct-option uint))))
-    (rewards (list 3 (tuple (label (string-ascii 10)) (value uint)))))))
-
-(define-data-var quiz-participants (map (tuple (quiz-id uint) (participant principal)) 
+    (rewards (list 3 (tuple (label (string-ascii 10)) (value uint))))))
+)
+(define-data-var quiz-participants (map (tuple (quiz-id uint) (participant principal))
     (tuple
         (num-questions-passed uint)
         (num-questions-failed uint)
@@ -32,24 +38,22 @@
 (define-event participant-added (quiz-id uint participant principal))
 (define-event rewards-distributed (quiz-id uint participants (list 100 principal) amounts (list 100 uint)))
 
-;; Create a quiz
-(define-public (create-quiz (title (string-ascii 100)) 
-                            (description (string-ascii 200)) 
-                            (image-url (string-ascii 256)) 
-                            (entrance-fee uint) 
-                            (price-pool uint) 
-                            (timer uint) 
-                            (questions (list 100 (tuple 
-                                (question-text (string-ascii 256)) 
-                                (question-img (string-ascii 256)) 
-                                (options (list 4 (string-ascii 50))) 
-                                (correct-option uint)))) 
-                            (rewards (list 3 (tuple (label (string-ascii 10)) (value uint)))) 
+;; Function to create a quiz
+(define-public (create-quiz (title (string-ascii 100))
+                            (description (string-ascii 200))
+                            (image-url (string-ascii 256))
+                            (entrance-fee uint)
+                            (price-pool uint)
+                            (timer uint)
+                            (questions (list 100 (tuple
+                                (question-text (string-ascii 256))
+                                (question-img (string-ascii 256))
+                                (options (list 4 (string-ascii 50)))
+                                (correct-option uint))))
+                            (rewards (list 3 (tuple (label (string-ascii 10)) (value uint))))
                             (visibility (string-ascii 10)))
     (begin
-        ;; Increment the quiz ID counter
         (let ((quiz-id (var-get quiz-id-counter)))
-            ;; Ensure the price pool is paid by the organizer (tx-sender)
             (stx-transfer? price-pool tx-sender tx-sender)
 
             ;; Insert the quiz into the map
@@ -77,13 +81,12 @@
     )
 )
 
-;; Participants to join a quiz
+;; Function to participate in a quiz
 (define-public (participate-in-quiz (quiz-id uint))
     (let ((quiz (map-get? quizzes quiz-id)))
         (match quiz
             quiz-data
             (begin
-                ;; Check if the quiz is active
                 (asserts! (get is-active quiz-data) (err "Quiz is not active"))
 
                 ;; Pay entrance fee to the organizer
@@ -92,7 +95,6 @@
                 ;; Add participant if not already present
                 (let ((participant (map-get? quiz-participants (tuple (quiz-id tx-sender)))))
                     (if participant
-                        ;; If participant already exists, increment their attempts
                         (let ((attempts (+ (get attempts participant) u1)))
                             (map-set quiz-participants (tuple (quiz-id tx-sender)) (tuple
                                 (num-questions-passed (get num-questions-passed participant))
@@ -100,14 +102,12 @@
                                 (points (get points participant))
                                 (grade (get grade participant))
                                 (attempts attempts))))
-                        ;; If participant does not exist, create a new entry
                         (map-set quiz-participants (tuple (quiz-id tx-sender)) (tuple
                             (num-questions-passed u0)
                             (num-questions-failed u0)
                             (points u0)
                             (grade u0)
                             (attempts u1)))))
-                ;; Emit event
                 (emit-event (participant-added quiz-id tx-sender))
                 (ok "Participant added")
             )
@@ -116,7 +116,7 @@
     )
 )
 
-;; Submit quiz results
+;; Function to submit quiz results
 (define-public (submit-quiz-result (quiz-id uint) (grade uint) (num-questions-passed uint) (num-questions-failed uint) (points uint))
     (let ((quiz (map-get? quizzes quiz-id)))
         (match quiz
@@ -137,16 +137,15 @@
     )
 )
 
-;; Distribute rewards
+;; Function to distribute rewards
 (define-public (distribute-rewards (quiz-id uint) (participants (list 100 principal)) (amounts (list 100 uint)))
     (let ((quiz (map-get? quizzes quiz-id)))
         (match quiz
             quiz-data
             (begin
-                ;; Ensure only the quiz organizer can distribute rewards
                 (asserts! (is-eq (get organizer quiz-data) tx-sender) (err "Only organizer can distribute rewards"))
                 (asserts! (is-eq (len participants) (len amounts)) (err "Mismatch in participants and amounts"))
-                
+
                 ;; Transfer rewards
                 (let loop ((index u0))
                     (if (< index (len participants))
@@ -160,4 +159,9 @@
             (err "Quiz not found")
         )
     )
+)
+
+;; Function to get STX balance of the contract
+(define-read-only (get-balance)
+    (ok (stx-get-balance (as-contract tx-sender)))
 )
