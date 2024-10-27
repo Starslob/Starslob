@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { ethers } from "ethers";
-import { ABI, CONTRACT_ADDRESS } from "./Constants";
-import theta from "../assets/img/theta.jpg";
-import tfuel from "../assets/img/tfuel.jpg";
+import React, { useState } from "react";
+import { useWeb3 } from "../Web3Provider";
+import btc from "../assets/img/btc.png";
+import stacks from "../assets/img/stacks.png";
 import useimage from "../assets/address.jpg";
 import Modal from "./Modal";
 
+// Dummy data for your top users
 const Ongoinggm = [
   { id: 1, title: "Tolujohn Bob", reward: "30", level: "1" },
   { id: 2, title: "Fabrre don", reward: "15", level: "6" },
@@ -16,44 +16,7 @@ const Ongoinggm = [
 
 const Sidebar = () => {
   const [isGamemodalOpen, setIsGamemodalOpen] = useState(false);
-  const [thetaBalance, setThetaBalance] = useState("0");
-  const [tfuelBalance, setTfuelBalance] = useState("0");
-
-  useEffect(() => {
-    const fetchBalances = async () => {
-      if (window.ethereum) {
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-
-        try {
-          const accounts = await window.ethereum.request({
-            method: "eth_accounts",
-          });
-          if (accounts.length > 0) {
-            const address = accounts[0];
-
-            // Fetch TFUEL balance
-            const tfuelBalance = await provider.getBalance(address);
-            setTfuelBalance(ethers.utils.formatEther(tfuelBalance));
-
-            // Fetch THETA balance using contract
-            const thetaContract = new ethers.Contract(
-              CONTRACT_ADDRESS,
-              ABI,
-              provider
-            );
-            const thetaBalance = await thetaContract.balanceOf(address);
-            setThetaBalance(ethers.utils.formatEther(thetaBalance));
-          } else {
-            console.error("No accounts found");
-          }
-        } catch (error) {
-          console.error("Failed to get accounts:", error);
-        }
-      }
-    };
-
-    fetchBalances();
-  }, []);
+  const { account, btcBalance, stxBalance } = useWeb3(); // Get account and balances from Web3 context
 
   const handleGamemodalClick = () => {
     setIsGamemodalOpen(true);
@@ -61,12 +24,6 @@ const Sidebar = () => {
 
   const handleCloseGamemodal = () => {
     setIsGamemodalOpen(false);
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // claim
-    handleCloseGamemodal();
   };
 
   return (
@@ -78,19 +35,19 @@ const Sidebar = () => {
             <h5 className="card-title">Balance:</h5>
             <div className="d-flex align-items-center">
               <div className="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                <img id="balance" src={theta} alt="Theta Logo" />
+                <img id="balance" src={btc} alt="BTC Logo" />
               </div>
               <div className="ps-3">
-                <h6>{parseFloat(thetaBalance).toFixed(2)} THETA</h6>
+                <h6>{parseFloat(btcBalance).toFixed(2)} BTC</h6>
               </div>
             </div>
             <hr />
             <div className="d-flex align-items-center">
               <div className="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                <img id="balance" src={tfuel} alt="TFUEL Logo" />
+                <img id="balance" src={stacks} alt="STX Logo" />
               </div>
               <div className="ps-3">
-                <h6> {parseFloat(tfuelBalance).toFixed(2)} TFUEL</h6>
+                <h6>{parseFloat(stxBalance).toFixed(2)} STX</h6>
               </div>
             </div>
           </div>
@@ -139,12 +96,7 @@ const Sidebar = () => {
         </div>
         {/* End News & Updates */}
       </div>
-      <>
-        {/* Render the Gamemodal if isGamemodalOpen is true */}
-        {isGamemodalOpen && (
-          <Modal onClose={handleCloseGamemodal} onSubmit={handleSubmit} />
-        )}
-      </>
+      {isGamemodalOpen && <Modal onClose={handleCloseGamemodal} />}
     </>
   );
 };

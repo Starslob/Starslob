@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import logo from "../assets/geniuslob.png";
+import logo from "../assets/img/starslob-star-logo.png";
 import Connectwallet from "./walletconnect/Connectwallet";
 
 // import logo from "../assets/img/logo.png";
@@ -30,7 +30,7 @@ const Navbar = () => {
             alt=""
             className="h-[70px] w-[70px] object-cover"
           />
-          <span className="d-none d-lg-block">eniusmind</span>
+          <span className="d-none d-lg-block">StarsLob</span>
         </Link>
       </div>
       {/* End Logo */}

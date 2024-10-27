@@ -6,7 +6,7 @@ import React, {
   useImperativeHandle,
 } from "react";
 import { TypingIndicator } from "@chatscope/chat-ui-kit-react";
-import logo from "../../assets/img/tfuel.jpg";
+import logo from "../../assets/img/stx-white-no-gb.png";
 
 const Airesponse = forwardRef((props, ref) => {
   const [chatMessages, setChatMessages] = useState([]);
