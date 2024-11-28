@@ -155,7 +155,67 @@ const Chat = () => {
   return (
     <>
       <section id="chat-section" className="chat-section">
-       
+        <div className="container">
+          <div className="chat-window">
+            <div className="chat-messages">
+              {chatMessages.map((message, index) => (
+                <div
+                  key={index}
+                  className={`chat-message ${
+                    message.sender === "user" ? "user-message" : "ai-message"
+                  }`}
+                >
+                  <div style={{ display: "flex" }}>
+                    {message.sender === "model" && (
+                      <img
+                        style={{
+                          height: "30px",
+                          width: "30px",
+                          borderRadius: "50%",
+                          marginRight: "10px",
+                          alignSelf: "flex-start",
+                        }}
+                        src={logo}
+                        alt="Logo"
+                      />
+                    )}
+                    <div>
+                      {message.error ? (
+                        <>
+                          <FontAwesomeIcon icon={faExclamationTriangle} />
+                          <span>{message.message}</span>
+                        </>
+                      ) : (
+                        message.message
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {isChatbotTyping && (
+                <div className="chat-message ai-message">
+                  <TypingIndicator content="ChatGPT is thinking" />
+                </div>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+            <div className="chat-input">
+              <button onClick={handleAttachClick}>
+                <FiPaperclip />
+              </button>
+              <input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="Type your message..."
+              />
+              <button onClick={() => handleUserMessage(input)}>
+                <FiSend />
+              </button>
+            </div>
+          </div>
+        </div>
       </section>
       <input
         type="file"
