@@ -1,4 +1,4 @@
-# Stacrslob Contract
+# Starslob Contract
 
 ### Deploy Your Contract to the Stacks Blockchain
 
