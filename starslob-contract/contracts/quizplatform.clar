@@ -146,31 +146,31 @@
 )
 
 ;; Function to distribute rewards
-(define-public (distribute-rewards (quiz-id uint))
-    (let ((quiz (map-get? quizzes quiz-id)))
-        (match quiz
-            quiz-data
-            (begin
-                (asserts! (is-eq (get organizer quiz-data) tx-sender) (err "Only organizer can distribute rewards"))
+;; (define-public (distribute-rewards (quiz-id uint))
+;;     (let ((quiz (map-get? quizzes quiz-id)))
+;;         (match quiz
+;;             quiz-data
+;;             (begin
+;;                 (asserts! (is-eq (get organizer quiz-data) tx-sender) (err "Only organizer can distribute rewards"))
                 
-                ;; Filter and send rewards to winners
-                (let loop ((index u0) (rewarded u0))
-                    (if (< index (len (var-get quiz-participants)))
-                        (let ((participant (nth index (var-get quiz-participants)))
-                              (reward (get reward participant)))
-                            (if (get is_winner participant)
-                                (begin
-                                    (stx-transfer? reward (as-contract tx-sender) (get participant principal))
-                                    (loop (+ index u1) (+ rewarded reward)))
-                                (loop (+ index u1) rewarded)))
-                        (emit-event (rewards-distributed quiz-id (list 100 participant) (list 100 rewarded)))
-                        (ok "Rewards distributed"))
-                )
-            )
-            (err "Quiz not found")
-        )
-    )
-)
+;;                 ;; Filter and send rewards to winners
+;;                 (let loop ((index u0) (rewarded u0))
+;;                     (if (< index (len (var-get quiz-participants)))
+;;                         (let ((participant (nth index (var-get quiz-participants)))
+;;                               (reward (get reward participant)))
+;;                             (if (get is_winner participant)
+;;                                 (begin
+;;                                     (stx-transfer? reward (as-contract tx-sender) (get participant principal))
+;;                                     (loop (+ index u1) (+ rewarded reward)))
+;;                                 (loop (+ index u1) rewarded)))
+;;                         (emit-event (rewards-distributed quiz-id (list 100 participant) (list 100 rewarded)))
+;;                         (ok "Rewards distributed"))
+;;                 )
+;;             )
+;;             (err "Quiz not found")
+;;         )
+;;     )
+;; )
 
 ;; Function to check the contract balance
 (define-read-only (get-balance)
