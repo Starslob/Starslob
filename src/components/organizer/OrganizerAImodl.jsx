@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import { TypingIndicator } from "@chatscope/chat-ui-kit-react";
 import logo from "../../assets/img/stx-white-no-gb.png";
+// MOdel
 
 const Airesponse = forwardRef((props, ref) => {
   const [chatMessages, setChatMessages] = useState([]);
@@ -178,7 +179,7 @@ const Airesponse = forwardRef((props, ref) => {
                   </div>
                 </div>
               ))}
-              {/* internal chat bot mesage pop */}
+              {/* internal chat bosjont mesage pop */}
               {isChatbotTyping && (
                 <div className="chat-message ai-message">
                   <TypingIndicator content="ChatGPT is thinking" />
